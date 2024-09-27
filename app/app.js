@@ -3,11 +3,17 @@ var express = require('express');
 var cors = require('cors');
 var connectTimeout = require('connect-timeout');
 var logger = require('./utils/logger');
+var RateLimit = require('express-rate-limit');
 // Variable declaration
 const configuration = require('./utils/configuration');
 const timeout = process.env.TIMEOUT || configuration.getProperty('timeout');
 // Initialize application
 var app = express();
+var limiter = RateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // max 100 requests per windowMs
+});
+app.use(limiter);
 app.use(express.json());
 app.use(cors());
 app.use(express.static(process.cwd() + '/public'));
